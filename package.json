@@ -14,10 +14,21 @@
   "contributes": {
     "commands": [
       {
-        "command": "custom-emmets.helloWorld",
-        "title": "Hello World"
+        "command": "custom-emmets.addAbbreviation",
+        "title": "Add Emmet Abbreviation"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Custom Emmet Abbreviations",
+      "properties": {
+        "customEmmet.abbreviations": {
+          "type": "array",
+          "default": [],
+          "description": "List of custom Emmet abbreviations"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
