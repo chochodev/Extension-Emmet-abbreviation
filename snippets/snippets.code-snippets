@@ -1,0 +1,11 @@
+{
+  "Function with Prompts": {
+    "prefix": "func",
+    "body": [
+      "function ${1:functionName}(${2:params}) {",
+      "\t${3:// body}",
+      "}"
+    ],
+    "description": "Create a function with prompts for name and parameters"
+  }
+}
