@@ -1,8 +1,6 @@
 # Change Log
 
-All notable changes to the "custom-snippets" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+// ::::::::::::::::::: on keyboard shortcut turns a highlighted code into a snippets asking for the language and abbr to use
 
 ## [Unreleased]
 
