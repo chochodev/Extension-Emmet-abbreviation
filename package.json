@@ -1,63 +1,57 @@
 {
-  "name": "vscode-emmet-expander",
-  "displayName": "VS Code Emmet Expander",
-  "description": "Expand custom abbreviations into text or GitHub file content",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.60.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onCommand:vscode-emmet-expander.expand"
-  ],
-  "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "vscode-emmet-expander.expand",
-        "title": "Expand Emmet Abbreviation"
-      }
+    "name": "vscode-key-expander",
+    "displayName": "VS Code Key Expander",
+    "description": "Expand custom keys into stored values",
+    "version": "0.0.1",
+    "engines": {
+      "vscode": "^1.60.0"
+    },
+    "categories": [
+      "Other"
     ],
-    "configuration": {
-      "title": "Emmet Expander",
-      "properties": {
-        "emmetExpander.abbreviations": {
-          "type": "object",
-          "default": {},
-          "description": "Custom abbreviations and their expansions"
+    "activationEvents": [
+      "onCommand:vscode-key-expander.storeKeyValue",
+      "onCommand:vscode-key-expander.expand"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+      "commands": [
+        {
+          "command": "vscode-key-expander.storeKeyValue",
+          "title": "Key Expander: Store Key-Value Pair"
         },
-        "emmetExpander.githubToken": {
-          "type": "string",
-          "default": "",
-          "description": "GitHub Personal Access Token for fetching file content"
+        {
+          "command": "vscode-key-expander.expand",
+          "title": "Key Expander: Expand Key"
         }
-      }
+      ],
+      "keybindings": [
+        {
+          "command": "vscode-key-expander.expand",
+          "key": "enter",
+          "when": "editorTextFocus && !suggestWidgetVisible"
+        }
+      ]
+    },
+    "scripts": {
+      "vscode:prepublish": "npm run compile",
+      "compile": "tsc -p ./",
+      "watch": "tsc -watch -p ./",
+      "pretest": "npm run compile && npm run lint",
+      "lint": "eslint src --ext ts",
+      "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+      "@types/vscode": "^1.60.0",
+      "@types/glob": "^7.1.3",
+      "@types/mocha": "^8.2.2",
+      "@types/node": "14.x",
+      "eslint": "^7.27.0",
+      "@typescript-eslint/eslint-plugin": "^4.26.0",
+      "@typescript-eslint/parser": "^4.26.0",
+      "glob": "^7.1.7",
+      "mocha": "^8.4.0",
+      "typescript": "^4.3.2",
+      "vscode-test": "^1.5.2"
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.60.0",
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "14.x",
-    "eslint": "^7.27.0",
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
-    "@typescript-eslint/parser": "^4.26.0",
-    "glob": "^7.1.7",
-    "mocha": "^8.4.0",
-    "typescript": "^4.3.2",
-    "vscode-test": "^1.5.2"
-  },
-  "dependencies": {
-    "axios": "^0.21.1"
   }
-}
