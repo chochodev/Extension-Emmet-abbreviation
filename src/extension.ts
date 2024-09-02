@@ -1,59 +1,65 @@
 import * as vscode from 'vscode';
+import axios from 'axios';
 
-// ::::::::::::::::::::::: main function
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Congratulations, your extension "custom-emmets" is now active!');
+    let disposable = vscode.commands.registerCommand('vscode-emmet-expander.expand', async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
 
-  // ::::::::::::::::::::::::: Register the command
-  let disposable = vscode.commands.registerCommand('custom-emmets.addAbbreviation', async () => {
-    const abbreviation = await vscode.window.showInputBox({ prompt: 'Enter Emmet abbreviation' });
-    const expansion = await vscode.window.showInputBox({ prompt: 'Enter Emmet expansion' });
+        const document = editor.document;
+        const selection = editor.selection;
+        const line = document.lineAt(selection.start.line);
+        const lineText = line.text.substring(0, selection.start.character);
 
-    if (abbreviation && expansion) {
-      const config = vscode.workspace.getConfiguration('customEmmet');
-      let abbreviations = config.get<string[]>('abbreviations') || [];
-      abbreviations.push(`${abbreviation}=${expansion}`);
-      await config.update('abbreviations', abbreviations, vscode.ConfigurationTarget.Global);
-      vscode.window.showInformationMessage(`Added Emmet abbreviation: ${abbreviation}`);
+        const config = vscode.workspace.getConfiguration('emmetExpander');
+        const abbreviations = config.get<{ [key: string]: string }>('abbreviations', {});
+
+        for (const [abbr, expansion] of Object.entries(abbreviations)) {
+            if (lineText.endsWith(abbr)) {
+                const expansionText = await getExpansionText(expansion);
+                if (expansionText) {
+                    await editor.edit((editBuilder) => {
+                        const start = new vscode.Position(selection.start.line, selection.start.character - abbr.length);
+                        const end = selection.start;
+                        editBuilder.replace(new vscode.Range(start, end), expansionText);
+                    });
+                    return;
+                }
+            }
+        }
+    });
+
+    context.subscriptions.push(disposable);
+}
+
+async function getExpansionText(expansion: string): Promise<string | null> {
+    if (expansion.startsWith('github:')) {
+        const [_, owner, repo, path] = expansion.split(':');
+        const config = vscode.workspace.getConfiguration('emmetExpander');
+        const token = config.get<string>('githubToken', '');
+
+        if (!token) {
+            vscode.window.showErrorMessage('GitHub token is not set. Please set it in the extension settings.');
+            return null;
+        }
+
+        try {
+            const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3.raw'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to fetch GitHub file: ${error.message}`);
+            return null;
+        }
     } else {
-      vscode.window.showErrorMessage('Abbreviation or expansion is missing.');
+        return expansion;
     }
-  });
-
-  context.subscriptions.push(disposable);
-
-  // ::::::::::::::::::::::: Register the completion item provider
-  const provider = vscode.languages.registerCompletionItemProvider(
-    '*', // :::::::::::::: makes it language independent
-    new CustomCompletionProvider(),
-    ' ', // Trigger completion after a space (or any other character you want)
-    '.', // Optionally use additional trigger characters
-    '<', // Example of additional trigger characters
-    '/'
-  );
-
-  context.subscriptions.push(provider);
 }
 
 export function deactivate() {}
-
-class CustomCompletionProvider implements vscode.CompletionItemProvider {
-  async provideCompletionItems(
-    document: vscode.TextDocument,
-    position: vscode.Position,
-    token: vscode.CancellationToken,
-    context: vscode.CompletionContext
-  ): Promise<vscode.CompletionItem[]> {
-    const config = vscode.workspace.getConfiguration('customEmmet');
-    const abbreviations = config.get<string[]>('abbreviations') || [];
-    
-    const items = abbreviations.map(abbr => {
-      const [prefix, body] = abbr.split('=');
-      const item = new vscode.CompletionItem(prefix, vscode.CompletionItemKind.Snippet);
-      item.insertText = new vscode.SnippetString(body);
-      return item;
-    });
-
-    return items;
-  }
-}
