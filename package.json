@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "name": "vscode-key-expander",
     "displayName": "VS Code Key Expander",
     "description": "Expand custom keys into stored values",
@@ -55,3 +56,34 @@
       "vscode-test": "^1.5.2"
     }
   }
+=======
+  "name": "custom-snippets",
+  "displayName": "custom-snippets",
+  "description": "An extension to add custom snippets",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Snippets"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "customSnippets.addSnippet",
+        "title": "Add Custom Snippet"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/snippets.code-snippets"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onCommand:customSnippets.addSnippet"
+  ],
+  "main": "./src/extension.js"
+}
+>>>>>>> 1a6073a6b20b52736e35ba7c94bc7d114ed21e4f
