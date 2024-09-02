@@ -26,7 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
   const provider = vscode.languages.registerCompletionItemProvider(
     '*', // :::::::::::::: makes it language independent
     new CustomCompletionProvider(),
-    '.' // Trigger completion after a dot (or any other character you want)
+    ' ', // Trigger completion after a space (or any other character you want)
+    '.', // Optionally use additional trigger characters
+    '<', // Example of additional trigger characters
+    '/'
   );
 
   context.subscriptions.push(provider);
@@ -44,11 +47,13 @@ class CustomCompletionProvider implements vscode.CompletionItemProvider {
     const config = vscode.workspace.getConfiguration('customEmmet');
     const abbreviations = config.get<string[]>('abbreviations') || [];
     
-    return abbreviations.map(abbr => {
+    const items = abbreviations.map(abbr => {
       const [prefix, body] = abbr.split('=');
       const item = new vscode.CompletionItem(prefix, vscode.CompletionItemKind.Snippet);
       item.insertText = new vscode.SnippetString(body);
       return item;
     });
+
+    return items;
   }
 }
